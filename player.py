@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
 
 		self.laser_sound = pygame.mixer.Sound('./audio/laser.wav')
 		self.laser_sound.set_volume(0.5)
-		self.cooldown_time = 0																																																										
+		self.cooldown_time =0 
 		self.cooldown=300
 		self.cooldown_state = True
 		self.closeState= True

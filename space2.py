@@ -15,7 +15,7 @@ class Game:
         self.screen_height=screen_height
         self.screen=screen
         self.clock=clock
-        self.clock.tick(60)
+        self.clock.tick(30)
 
         self.handOK=False
 
@@ -187,7 +187,6 @@ class Game:
 
     def runMove(self):
         if self.handOK and self.lives>0:
-            self.clock.tick(60)
             self.player.update()
             self.aliens_lasers.update()
 
@@ -196,7 +195,6 @@ class Game:
             self.extra_spawn_timer()
         else:
             self.hand_detected()
-            self.clock.tick(10)
 
 class CRT:
     def __init__(self):
@@ -223,6 +221,7 @@ class Space(Thread):
         screen_height= 600
         screen = pygame.display.set_mode((screen_width, screen_height))
         clock= pygame.time.Clock()
+        clock.tick(30)
         self.crt= CRT()
         self.games= Game(screen_width,screen_height,screen,clock)
 
@@ -239,7 +238,6 @@ class Space(Thread):
         screen_height= 600
         screen = pygame.display.set_mode((screen_width, screen_height))
         clock= pygame.time.Clock()
-        clock.tick(24)
         game= self.games
 
         ALIENLAZER = pygame.USEREVENT =1
@@ -252,7 +250,7 @@ class Space(Thread):
                     pygame.quit()
                     self.ok=False
                     #sys.exit()
-                if event.type == ALIENLAZER and game.handOK:
+                if event.type == ALIENLAZER and game.handOK and game.lives>0:
                     game.alien_shoot()
 
             if  not game.player.sprite.close():
@@ -260,17 +258,22 @@ class Space(Thread):
                 pygame.quit()
                 #sys.exit()
 
+            #restart stuff
+            keys = pygame.key.get_pressed()
             if game.lives<=0:
                 game.gameover()
-                print("restarted")
-                #game.__init__(screen_width,screen_height,screen,clock)
+                #print("restarted")
+
+            if game.lives<=0 or not game.aliens.sprites():
+                if keys[pygame.K_SPACE]:
+                    game.__init__(screen_width,screen_height,screen,clock)
+                    game.lives= 5
 
             screen.fill((30,30,30))
             game.runDraw()
             game.runMove()
             self.crt.draw(screen)
             pygame.display.flip()
-            clock.tick(60) 
             pygame.time.wait(0)
         self.ok=False   
         #print(game.score)
