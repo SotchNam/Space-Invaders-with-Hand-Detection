@@ -11,7 +11,7 @@ class HandDet(Thread):
     def __init__(self):
         self.cap = WebcamVideoStream(src=0).start()
         self.mpHands = mp.solutions.hands
-        self.hands = self.mpHands.Hands(min_detection_confidence=0.5,min_tracking_confidence=0.5)
+        self.hands = self.mpHands.Hands(model_complexity=0, max_num_hands=1,min_detection_confidence=0.5,min_tracking_confidence=0.5)
         self.mpDraw = mp.solutions.drawing_utils
         self.image = self.cap.read()
         self.x=0
@@ -30,7 +30,7 @@ class HandDet(Thread):
             #self.image= cv2.flip(self.image,1)
             #DO PREPROCESSING SHIT
             #self.image= imutils.resize(self.image, width=600)
-            self.image= resize(self.image, width=250)
+            #self.image= resize(self.image, width=250)
             imageRGB = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
             results = self.hands.process(imageRGB)
             if results.multi_hand_landmarks:
@@ -49,7 +49,7 @@ class HandDet(Thread):
             else:
                 self.handOK=False
             #print(self.handOK)
-            self.mpDraw.draw_landmarks(self.image, handLms, self.mpHands.HAND_CONNECTIONS)
+            #self.mpDraw.draw_landmarks(self.image, handLms, self.mpHands.HAND_CONNECTIONS)
             cv2.imshow("Output", self.image)
             cv2.waitKey(1)
             if (cv2.waitKey(1) & 0xFF ==ord('q')):

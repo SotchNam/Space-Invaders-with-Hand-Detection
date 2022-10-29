@@ -9,8 +9,8 @@ pygame.init()
 
 
 def passer(game,hand):
-	game.game.player.rect.x=hand.x
-	game.y=hand.y
+    game.game.player.rect.x=hand.x
+    game.y=hand.y
 
 
 #gameThread= space2.Space().start()
@@ -19,7 +19,7 @@ game=space2.Space()
 
 #Thread(target = passer, args=(game,handThread)).start()
 
-converter=600/250
+converter=600/640
 
 game.start()
 
@@ -28,13 +28,13 @@ state=True
 #print(game.ok)
 
 while state:
-	#print(handThread.x)
-	if handThread.handOK:
-		game.games.player.sprite.rect.x=600-handThread.x*converter
-	handThread.state=game.ok
-	state=game.ok
-	#print(game.ok)
-	game.games.handOK=handThread.handOK
+    #print(handThread.x)
+    if handThread.handOK:
+        game.games.player.sprite.rect.x=600-handThread.x*converter
+    handThread.state=game.ok
+    state=game.ok
+    #print(game.ok)
+    game.games.handOK=handThread.handOK
 game.stop()
 handThread.stop()
 #handThread.state=False
@@ -62,9 +62,9 @@ gameThread.start()
 
 state=True
 while state:
-	if keyboard.read_key() == "q":
-		state=False
-		break
+    if keyboard.read_key() == "q":
+        state=False
+        break
 
 handThread.stop()
 gameThread.stop()

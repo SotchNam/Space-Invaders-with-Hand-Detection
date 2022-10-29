@@ -15,7 +15,7 @@ class Game:
         self.screen_height=screen_height
         self.screen=screen
         self.clock=clock
-        self.clock.tick(30)
+        self.clock.tick(60)
 
         self.handOK=False
 
@@ -160,6 +160,13 @@ class Game:
             gameOver_rect= gameOver.get_rect(center=(self.screen_width/2,self.screen_height/2))
             self.screen.blit(gameOver,gameOver_rect)
 
+    def retryText(self):
+        if self.lives<=0 or not self.aliens.sprites():
+            #print("retry")
+            retry= self.font.render("press SPACE to retry",False,"white")
+            retry_rect= retry.get_rect(center=(self.screen_width/2,(2*self.screen_height/3)))
+            self.screen.blit(retry,retry_rect)
+
     def hand_detected(self):
         if not self.handOK and (self.aliens.sprites())and self.lives>0:
             handText=self.font.render("Please put your hand",False,"white")
@@ -184,6 +191,7 @@ class Game:
         self.collision_checks()
         self.victory_message()
         self.gameover()
+        self.retryText()
 
     def runMove(self):
         if self.handOK and self.lives>0:
