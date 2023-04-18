@@ -1,5 +1,5 @@
-import space2
-from pp3 import HandDet
+import space
+from handDet import HandDet
 from threading import Thread
 import pygame
 
@@ -10,7 +10,7 @@ handThread = HandDet()
 handThread.start()
 pygame.init()
 
-game=space2.Space()
+game=space.Space()
 game.start()
 
 
