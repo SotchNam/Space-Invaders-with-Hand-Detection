@@ -1,3 +1,4 @@
+###module for player###
 import pygame
 from lazer import Lazer
 	
@@ -41,25 +42,13 @@ class Player(pygame.sprite.Sprite):
 			self.rect.x+= self.speed
 		elif keys [pygame.K_LEFT] and   self.cooldown_state:
 			self.rect.x -= self.speed
-		"""
-		if keys[pygame.K_DOWN] and self.cooldown_state:
-			self.rect.y+= self.speed
-		elif keys [pygame.K_UP] and   self.cooldown_state:
-			self.rect.y -= self.speed
-
-		if (keys[pygame.K_SPACE] and self.ready ): # and (not self.cooldown):
-			
-		"""
 
 	def cool(self):
 		self.cooldown_state= False
 
 	def cooling(self):
-
 		if not self.cooldown_state:
 			current_time2= pygame.time.get_ticks()
-			#print(current_time2)
-			#print( self.cooldown_time)
 			if (current_time2- self.cooldown_time ) >= self.cooldown:
 				self.cooldown_state=True
 
@@ -75,6 +64,7 @@ class Player(pygame.sprite.Sprite):
 			
 	def clamp(self):
 		self.rect=self.rect.clamp(self.screen)
+
 	def close(self):
 		return self.closeState
 
@@ -84,4 +74,3 @@ class Player(pygame.sprite.Sprite):
 		self.recharge()
 		self.cooling()
 		self.lazers.update()
-		#print(self.cooldown_state)

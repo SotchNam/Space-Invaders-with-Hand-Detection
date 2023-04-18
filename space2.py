@@ -1,14 +1,17 @@
+#Game file that imports the different modules and runs the game#
+#please dont blame my young self who was inexperienced and lacked the time and skill to write good code instead of spaghetti code.
 import pygame, sys
 from player import Player
 from alien import Alien, Extra
 from random import choice, randint
 from lazer import Lazer
-#import pp3
 from threading import Thread
 
 
+#game class the contains its logic
 class Game:
     def __init__(self,screen_width,screen_height,screen,clock):
+        #initializing variables, screen, sprites, sounds, etc
         player_sprite = Player((screen_width/2,screen_height),screen_width,screen_height,5)
         
         self.screen_width=screen_width
@@ -16,13 +19,10 @@ class Game:
         self.screen=screen
         self.clock=clock
         self.clock.tick(60)
-
         self.handOK=False
 
 
-
         self.player = pygame.sprite.GroupSingle(player_sprite)
-
         self.aliens = pygame.sprite.Group()
         self.aliens_lasers= pygame.sprite.Group()
         self.alien_setup(rows=6,cols=8)
@@ -50,6 +50,7 @@ class Game:
 
 
 
+    #function that takes care of spawning aliens
     def alien_setup(self,rows,cols,x_distance=60,y_distance=48,x_offset=70,y_offset=100):
         for row_index, row in enumerate(range(rows)):
             for col_index, col in enumerate(range(cols)):
@@ -58,10 +59,10 @@ class Game:
                 
                 if row_index== 0 : alien_sprite= Alien("red",x,y) 
                 elif 1<= row_index<=2: alien_sprite= Alien("green",x,y) 
-                #if 0<= row_index<=2: alien_sprite= Alien("green",x,y) 
                 else : alien_sprite= Alien("yellow",x,y) 
                 self.aliens.add(alien_sprite)
 
+    #checks when aliens bump the sides of the screen and makes them move down accordingly
     def alien_position_check(self):
         all_aliens= self.aliens.sprites()
         for alien in all_aliens:
@@ -73,6 +74,7 @@ class Game:
                 self.alien_down(5)
   
 
+    #function that moves aliens up or down, depending on their direction
     def alien_down(self, distance):
         if self.aliens:
             for alien in self.aliens.sprites():
@@ -84,6 +86,7 @@ class Game:
             for alien in self.aliens.sprites():
                 alien.rect.y += distance*self.down_state
 
+    #function that makes aliens shoot lazer
     def alien_shoot(self):
         if self.aliens.sprites():
             random_alien = choice(self.aliens.sprites())
@@ -91,12 +94,14 @@ class Game:
             self.aliens_lasers.add(lazer_sprite)
             self.laser_sound.play()
 
+    #draws remaining lives in the right corner of the screen 
     def display_lives(self):
         for live in range(self.lives):
             x = self.live_x_start_pos*0+10 + (live * (self.live_surf.get_size()[0] + 10))
             self.screen.blit(self.live_surf,(x,8))
 
 
+    #timer that randomwly chooses when to spawn the extra alien
     def extra_spawn_timer(self):
         self.extra_spawn_time -= 1
         if self.extra_spawn_time <=0:
@@ -104,6 +109,7 @@ class Game:
             self.extra_spawn_time= randint(400,800)
 
 
+    #function that checks for collision between aliens,player, and lazers
     def collision_checks(self):
         if self.player.sprite.lazers:
             for lazer in self.player.sprite.lazers:
@@ -116,7 +122,6 @@ class Game:
                 if pygame.sprite.spritecollide(lazer,self.extra,True):
                     self.score+=500
                     lazer.kill()
-
 
         if self.aliens_lasers:
             for lazer in self.aliens_lasers:
@@ -135,50 +140,53 @@ class Game:
                 self.damaged()
 
 
+    #triggered when player collids with incoming alien lazer
     def damaged(self):
         self.lives-=1
         self.player.cooldown_time = pygame.time.get_ticks()
-        #self.player.sprite.cooldown_state= False
         self.player.sprite.cool()
         self.player.sprite.cooldown_time = pygame.time.get_ticks()
 
-
+    #draws score on upper right corner
     def display_score(self):
         score_surf = self.font.render(f'score: {self.score}',False,'white')
         score_rect = score_surf.get_rect(topleft = (400,-10))
         self.screen.blit(score_surf,score_rect)
 
+    #triggered when all normal aliens have been killed
     def victory_message(self):
         if not self.aliens.sprites():
             victory_surf = self.font.render('You won',False,'white')
             victory_rect = victory_surf.get_rect(center = (self.screen_width / 2, self.screen_height / 2))
             self.screen.blit(victory_surf,victory_rect)
 
+    #triggered when out of lives
     def gameover(self):
         if self.lives<=0 :
             gameOver= self.font.render("Game Over",False,"white")
             gameOver_rect= gameOver.get_rect(center=(self.screen_width/2,self.screen_height/2))
             self.screen.blit(gameOver,gameOver_rect)
 
+    #triggered after game end to retry, has been bypassed to automatically restart the game for showcase purposes
     def retryText(self):
         if self.lives<=0 or not self.aliens.sprites():
-            #print("retry")
-            retry= self.font.render("press SPACE to retry",False,"white")
+            #retry= self.font.render("press SPACE to retry",False,"white")
+            retry= self.font.render("retrying...",False,"white")
             retry_rect= retry.get_rect(center=(self.screen_width/2,(2*self.screen_height/3)))
             self.screen.blit(retry,retry_rect)
 
+    #triggered when no hand is detected to prompt to put hand infront of camera
     def hand_detected(self):
         if not self.handOK and (self.aliens.sprites())and self.lives>0:
             handText=self.font.render("Please put your hand",False,"white")
             handText_rect= handText.get_rect(center=(self.screen_width/2,self.screen_height/2))
             self.screen.blit(handText,handText_rect)
 
+    #draws the different sprites and calls drawing funcs
     def runDraw(self):
         self.player.sprite.lazers.draw(self.screen)
-
         
         self.alien_position_check()
-
         self.extra.draw(self.screen)
 
         self.player.draw(self.screen)
@@ -193,6 +201,7 @@ class Game:
         self.gameover()
         self.retryText()
 
+    #plays the game when hand and lives are available
     def runMove(self):
         if self.handOK and self.lives>0:
             self.player.update()
@@ -204,6 +213,7 @@ class Game:
         else:
             self.hand_detected()
 
+#class that draws scanlines over the screen for a retro look
 class CRT:
     def __init__(self):
         self.tv = pygame.image.load('./graphics/tv.png').convert_alpha()
@@ -222,6 +232,8 @@ class CRT:
         screen.blit(self.tv,(0,0))
 
 
+#the game thread that runs the game
+#start and stop get called in the main file to manage the thread
 class Space(Thread):
     def __init__(self):
         self.ok = True
@@ -251,31 +263,26 @@ class Space(Thread):
         ALIENLAZER = pygame.USEREVENT =1
         pygame.time.set_timer(ALIENLAZER,800)
 
-        #while game.lives>=0 :
         while self.ok :
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     self.ok=False
-                    #sys.exit()
                 if event.type == ALIENLAZER and game.handOK and game.lives>0:
                     game.alien_shoot()
 
             if  not game.player.sprite.close():
                 self.ok=False
                 pygame.quit()
-                #sys.exit()
 
             #restart stuff
             keys = pygame.key.get_pressed()
             if game.lives<=0:
                 game.gameover()
-                #print("restarted")
 
             if game.lives<=0 or not game.aliens.sprites():
-                if keys[pygame.K_SPACE]:
-                    game.__init__(screen_width,screen_height,screen,clock)
-                    game.lives= 5
+                game.__init__(screen_width,screen_height,screen,clock)
+                game.lives= 5
 
             screen.fill((30,30,30))
             game.runDraw()
@@ -284,9 +291,3 @@ class Space(Thread):
             pygame.display.flip()
             pygame.time.wait(0)
         self.ok=False   
-        #print(game.score)
-
-
-
-if __name__ == '__main__':
-    Space().run()

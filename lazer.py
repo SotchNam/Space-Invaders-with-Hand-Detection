@@ -1,3 +1,4 @@
+### Module for lasers projectile###
 import pygame
 
 class Lazer(pygame.sprite.Sprite):

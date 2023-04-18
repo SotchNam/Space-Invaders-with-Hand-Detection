@@ -1,3 +1,4 @@
+### Module for aliens in the game###
 import pygame
 
 class Alien (pygame.sprite.Sprite):
@@ -33,13 +34,3 @@ class Extra(pygame.sprite.Sprite):
 	def update(self):
 		self.rect.x +=self.speed
 
-class Boss(pygame.sprite.Sprite):
-	def __init__ (self,speed):
-		super().__init__()
-		self.image= pygame.image.load("./graphics/red.png")
-		self.rect=self.image.get_rect(topleft=(300,100))
-		self.speed= speed
-
-	def update(self):
-		self.rect.y += self.speed
-		self.health 
